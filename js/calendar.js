@@ -93,6 +93,7 @@ if(!String.prototype.formatNum) {
 				enable:       1
 			},
 			month: {
+				row_end: 0,
 				slide_events: 1,
 				enable:       1
 			},
@@ -1052,27 +1053,29 @@ if(!String.prototype.formatNum) {
 
 		var self = this;
 
-		var week = $(document.createElement('div')).attr('id', 'cal-week-box');
-		var start = this.options.position.start.getFullYear() + '-' + this.options.position.start.getMonthFormatted() + '-';
-		$('.cal-month-box .cal-row-fluid')
-			.on('mouseenter', function() {
-				var p = new Date(self.options.position.start);
-				var child = $('.cal-cell1:first-child .cal-month-day', this);
-				var day = (child.hasClass('cal-month-first-row') ? 1 : $('[data-cal-date]', child).text());
-				p.setDate(parseInt(day));
-				day = (day < 10 ? '0' + day : day);
-				week.html(self.locale.week.format(p.getWeek()));
-				week.attr('data-cal-week', start + day).show().appendTo(child);
-			})
-			.on('mouseleave', function() {
-				week.hide();
-			})
-		;
+		if(this.options.views[this.options.view].row_end) {
+			var week = $(document.createElement('div')).attr('id', 'cal-week-box');
+			var start = this.options.position.start.getFullYear() + '-' + this.options.position.start.getMonthFormatted() + '-';
+			$('.cal-month-box .cal-row-fluid')
+				.on('mouseenter', function() {
+					var p = new Date(self.options.position.start);
+					var child = $('.cal-cell1:first-child .cal-month-day', this);
+					var day = (child.hasClass('cal-month-first-row') ? 1 : $('[data-cal-date]', child).text());
+					p.setDate(parseInt(day));
+					day = (day < 10 ? '0' + day : day);
+					week.html(self.locale.week.format(p.getWeek()));
+					week.attr('data-cal-week', start + day).show().appendTo(child);
+				})
+				.on('mouseleave', function() {
+					week.hide();
+				})
+			;
 
-		week.click(function() {
-			self.options.day = $(this).data('cal-week');
-			self.view('week');
-		});
+			week.click(function() {
+				self.options.day = $(this).data('cal-week');
+				self.view('week');
+			});
+		}
 
 		$('a.event').mouseenter(function() {
 			$('a[data-event-id="' + $(this).data('event-id') + '"]').closest('.cal-cell1').addClass('day-highlight dh-' + $(this).data('event-class'));
